@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF MinerU 本地处理流程 - 2025年12月31日 16:19:00</title>
+    <script src="https://dataset-1255932437.cos.ap-nanjiang.myqcloud.com/js/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'default',
+            flowchart: {
+                useMaxWidth: false
+            }
+        });
+    </script>
+</head>
+<body>
+    <h1>PDF MinerU 本地处理流程</h1>
+    
+    <h2>原始流程</h2>
+    <div class="mermaid">
+        flowchart TD
+            A[本地PDF文件] --> B[手动上传到OSS服务器]
+            B --> C[获取远程URL]
+            C --> D[调用MinerU API<br/>https://vl-image.oss-cn-shanghai.aliyuncs.com/pdf/ + 文件名]
+            D --> E[获取Task ID]
+            E --> F[查询任务状态]
+            F --> G{任务完成?}
+            G -->|是| H[下载结果ZIP]
+            G -->|否| I[等待并重试]
+            I --> F
+            H --> J[解压结果]
+    </div>
+
+    <h2>改进后流程</h2>
+    <div class="mermaid">
+        flowchart TD
+            A[本地PDF文件路径] --> K[自动检测路径类型]
+            K -->|本地路径| L[尝试上传本地文件]
+            K -->|文件名| M[使用原始远程URL模式]
+            L --> N[获取远程访问URL]
+            N --> O[调用MinerU API<br/>使用获取的URL]
+            M --> O
+            O --> P[获取Task ID]
+            P --> Q[查询任务状态]
+            Q --> R{任务完成?}
+            R -->|是| S[下载结果ZIP]
+            R -->|否| T[等待并重试]
+            T --> Q
+            S --> U[解压结果]
+    </div>
+
+    <h2>关键改进点</h2>
+    <ol>
+        <li><strong>本地文件支持</strong>：直接传入本地PDF路径，无需手动上传</li>
+        <li><strong>智能路径检测</strong>：自动判断输入是本地路径还是远程文件名</li>
+        <li><strong>向后兼容</strong>：保留原有API接口，不影响现有代码</li>
+        <li><strong>错误处理增强</strong>：添加API响应验证和详细日志</li>
+        <li><strong>集成优化</strong>：与Pipeline无缝集成</li>
+    </ol>
+
+    <h2>API接口</h2>
+    <ul>
+        <li><code>get_task_id(file_name_or_path)</code> - 智能获取任务ID</li>
+        <li><code>get_result(task_id)</code> - 获取任务结果</li>
+        <li><code>unzip_file(zip_path)</code> - 解压结果文件</li>
+    </ul>
+</body>
+</html>

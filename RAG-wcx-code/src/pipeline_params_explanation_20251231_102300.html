@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>pipeline.py 参数详解</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        .param-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        .param-table th, .param-table td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        .param-table th {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .param-table tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        .param-name {
+            font-weight: bold;
+            color: #2196F3;
+        }
+        .param-type {
+            font-style: italic;
+            color: #777;
+        }
+        .param-description {
+            margin: 10px 0;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-left: 4px solid #2196F3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>pipeline.py 参数详解</h1>
+        <p><strong>生成时间：</strong>2025年12月31日 10:23:00</p>
+
+        <h2>参数配置说明</h2>
+        <table class="param-table">
+            <thead>
+                <tr>
+                    <th>参数名</th>
+                    <th>类型</th>
+                    <th>默认值</th>
+                    <th>说明</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="param-name">use_serialized_tables</td>
+                    <td class="param-type">bool</td>
+                    <td>False</td>
+                    <td>是否使用序列化的表格数据。如果为True，系统会将表格内容转换为上下文独立的信息块，便于检索和理解。</td>
+                </tr>
+                <tr>
+                    <td class="param-name">parent_document_retrieval</td>
+                    <td class="param-type">bool</td>
+                    <td>False</td>
+                    <td>是否启用父文档检索。如果为True，在检索文本块后会返回整个父页面内容，而不是仅返回匹配的文本块。</td>
+                </tr>
+                <tr>
+                    <td class="param-name">use_vector_dbs</td>
+                    <td class="param-type">bool</td>
+                    <td>True</td>
+                    <td>是否使用向量数据库进行检索。如果为True，系统会使用FAISS向量数据库进行相似度检索。</td>
+                </tr>
+                <tr>
+                    <td class="param-name">use_bm25_db</td>
+                    <td class="param-type">bool</td>
+                    <td>False</td>
+                    <td>是否使用BM25数据库进行检索。如果为True，系统会使用传统的BM25算法进行检索，通常用于混合检索策略。</td>
+                </tr>
+                <tr>
+                    <td class="param-name">llm_reranking</td>
+                    <td class="param-type">bool</td>
+                    <td>False</td>
+                    <td>是否启用大语言模型重排。如果为True，系统会在检索后使用LLM对检索结果进行相关性重排，提高结果质量。</td>
+                </tr>
+                <tr>
+                    <td class="param-name">llm_reranking_sample_size</td>
+                    <td class="param-type">int</td>
+                    <td>30</td>
+                    <td>LLM重排的样本大小。在进行LLM重排时，会先从向量检索中获取此数量的候选文档，然后通过LLM进行重排。</td>
+                </tr>
+                <tr>
+                    <td class="param-name">top_n_retrieval</td>
+                    <td class="param-type">int</td>
+                    <td>10</td>
+                    <td>检索返回的文档数量。系统将返回最相关的top_n个文档片段供后续处理使用。</td>
+                </tr>
+                <tr>
+                    <td class="param-name">parallel_requests</td>
+                    <td class="param-type">int</td>
+                    <td>1</td>
+                    <td>并行请求数量。用于控制API调用的并发数，限制可防止API超出调用频率限制（如qwen-turbo的阈值）。</td>
+                </tr>
+                <tr>
+                    <td class="param-name">pipeline_details</td>
+                    <td class="param-type">str</td>
+                    <td>""</td>
+                    <td>流水线详情描述。用于记录当前配置的流水线处理细节，便于后期分析和调试。</td>
+                </tr>
+                <tr>
+                    <td class="param-name">submission_file</td>
+                    <td class="param-type">bool</td>
+                    <td>True</td>
+                    <td>是否生成提交文件。如果为True，系统会生成符合比赛或项目要求的格式化提交文件。</td>
+                </tr>
+                <tr>
+                    <td class="param-name">full_context</td>
+                    <td class="param-type">bool</td>
+                    <td>False</td>
+                    <td>是否使用完整上下文。如果为True，系统会检索文档的全部内容而不是仅匹配的片段。</td>
+                </tr>
+                <tr>
+                    <td class="param-name">api_provider</td>
+                    <td class="param-type">str</td>
+                    <td>"dashscope"</td>
+                    <td>API提供商。指定使用的LLM服务提供商，如"dashscope"（阿里云通义千问）、"openai"、"ibm"、"gemini"等。</td>
+                </tr>
+                <tr>
+                    <td class="param-name">answering_model</td>
+                    <td class="param-type">str</td>
+                    <td>"qwen-turbo-latest"</td>
+                    <td>问答模型名称。指定用于生成答案的具体模型，如"qwen-turbo-latest"、"gpt-4o-mini-2024-07-18"、"gpt-4o-2024-08-06"等。</td>
+                </tr>
+                <tr>
+                    <td class="param-name">config_suffix</td>
+                    <td class="param-type">str</td>
+                    <td>""</td>
+                    <td>配置后缀。用于区分不同配置生成的文件，避免命名冲突。</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="param-description">
+            <h3>配置使用场景</h3>
+            <p>这些参数通过 <code>RunConfig</code> 类进行配置，可以根据不同需求组合使用：</p>
+            <ul>
+                <li><strong>基础配置</strong> (base): 使用向量数据库，生成提交文件，使用GPT-4o-mini模型</li>
+                <li><strong>父文档检索配置</strong> (pdr): 启用父文档检索，使用GPT-4o模型</li>
+                <li><strong>最大配置</strong> (max): 启用LLM重排，使用qwen-turbo模型</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

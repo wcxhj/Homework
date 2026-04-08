@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAG-wcx-code 项目结构 - 20251230_165800</title>
+    <script src="https://dataset-1255932437.cos.ap-nanjing.myqcloud.com/js/mermaid.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        .section {
+            margin-bottom: 40px;
+        }
+        .mermaid {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .file-description {
+            background-color: #f1f8ff;
+            border-left: 4px solid #2196f3;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        .svg-diagram {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .flow-step {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+        }
+        .flow-step-number {
+            background-color: #3498db;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+        .highlight {
+            background-color: #fff3cd;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>RAG-wcx-code 项目结构分析报告</h1>
+        <p><strong>生成时间：</strong>2025年12月30日 16:58:00</p>
+
+        <div class="section">
+            <h2>项目概述</h2>
+            <p>这是一个基于RAG（检索增强生成）的企业知识库系统，主要用于处理企业年报文档，实现智能问答功能。项目集成了PDF解析、文本分块、向量检索、重排等多种技术。</p>
+        </div>
+
+        <div class="section">
+            <h2>核心架构图</h2>
+            <div class="mermaid" id="arch-graph">
+                graph TD
+                    A["PDF Reports<br/>(输入文档)"] --> B["pdf_parsing.py<br/>(PDF解析)"]
+                    B --> C["parsed_reports_merging.py<br/>(内容规整)"]
+                    C --> D["text_splitter.py<br/>(文本分块)"]
+                    D --> E["ingestion.py<br/>(数据索引)"]
+                    E --> F["Vector DB & BM25<br/>(存储检索)"]
+                    F --> G["retrieval.py<br/>(信息检索)"]
+                    G --> H["reranking.py<br/>(结果重排)"]
+                    H --> I["questions_processing.py<br/>(问题处理)"]
+                    I --> J["API Requests<br/>(模型调用)"]
+                    J --> K["Final Answer<br/>(最终答案)"]
+                    
+                    M["Pipeline<br/>(流程编排)"] --> B
+                    M --> D
+                    M --> E
+                    M --> I
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>src目录文件功能说明</h2>
+            
+            <div class="file-description">
+                <h3>pipeline.py</h3>
+                <p><strong>核心流程编排文件</strong> - 定义了整个RAG系统的处理管道，包括PDF解析、文本分块、向量库构建、问题处理等主要流程的编排和配置管理。</p>
+            </div>
+
+            <div class="file-description">
+                <h3>pdf_parsing.py</h3>
+                <p><strong>PDF解析器</strong> - 使用Docling库解析PDF文档，提取文本、表格、图片等内容，转换为结构化JSON格式。</p>
+            </div>
+
+            <div class="file-description">
+                <h3>text_splitter.py</h3>
+                <p><strong>文本分块器</strong> - 将解析后的文档内容按页或内容进行分块，支持Markdown和JSON格式处理，计算token数量。</p>
+            </div>
+
+            <div class="file-description">
+                <h3>ingestion.py</h3>
+                <p><strong>数据索引器</strong> - 构建BM25和向量数据库索引，支持FAISS向量库和DashScope嵌入模型。</p>
+            </div>
+
+            <div class="file-description">
+                <h3>retrieval.py</h3>
+                <p><strong>检索器</strong> - 实现BM25、向量检索和混合检索，支持按公司名称检索相关文档片段。</p>
+            </div>
+
+            <div class="file-description">
+                <h3>reranking.py</h3>
+                <p><strong>重排器</strong> - 提供Jina和LLM重排功能，结合向量相似度和大模型相关性评分进行结果重排。</p>
+            </div>
+
+            <div class="file-description">
+                <h3>questions_processing.py</h3>
+                <p><strong>问题处理器</strong> - 处理用户问题，实现单公司和多公司比较问题的解析，调用LLM生成答案。</p>
+            </div>
+
+            <div class="file-description">
+                <h3>api_requests.py</h3>
+                <p><strong>API请求处理器</strong> - 封装多种LLM提供商（OpenAI、IBM、Gemini、DashScope）的API调用接口。</p>
+            </div>
+
+            <div class="file-description">
+                <h3>prompts.py</h3>
+                <p><strong>提示词管理</strong> - 定义各种RAG任务的系统提示词和数据结构，支持问答、重排、重写等任务。</p>
+            </div>
+
+            <div class="file-description">
+                <h3>pdf_mineru.py</h3>
+                <p><strong>PDF转换工具</strong> - 使用mineru.net服务将PDF转换为Markdown格式的辅助工具。</p>
+            </div>
+
+            <div class="file-description">
+                <h3>parsed_reports_merging.py</h3>
+                <p><strong>报告规整器</strong> - 清洗和格式化解析后的报告文本，处理表格、列表、脚注等元素。</p>
+            </div>
+
+            <div class="file-description">
+                <h3>tables_serialization.py</h3>
+                <p><strong>表格序列化器</strong> - 使用LLM将表格转换为上下文独立的信息块，便于检索和理解。</p>
+            </div>
+
+            <div class="file-description">
+                <h3>api_request_parallel_processor.py</h3>
+                <p><strong>异步API处理器</strong> - 处理批量异步API请求的工具类。</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>核心处理流程</h2>
+            
+            <div class="flow-step">
+                <div class="flow-step-number">1</div>
+                <div><strong>文档预处理</strong> - 通过pdf_parsing.py解析PDF文档，提取结构化内容</div>
+            </div>
+            
+            <div class="flow-step">
+                <div class="flow-step-number">2</div>
+                <div><strong>内容规整</strong> - 使用parsed_reports_merging.py清洗和格式化文档内容</div>
+            </div>
+            
+            <div class="flow-step">
+                <div class="flow-step-number">3</div>
+                <div><strong>文本分块</strong> - 通过text_splitter.py将文档内容按块分割并计算token</div>
+            </div>
+            
+            <div class="flow-step">
+                <div class="flow-step-number">4</div>
+                <div><strong>数据索引</strong> - 用ingestion.py构建BM25和向量数据库索引</div>
+            </div>
+            
+            <div class="flow-step">
+                <div class="flow-step-number">5</div>
+                <div><strong>信息检索</strong> - 通过retrieval.py实现多策略文档片段检索</div>
+            </div>
+            
+            <div class="flow-step">
+                <div class="flow-step-number">6</div>
+                <div><strong>结果重排</strong> - 使用reranking.py优化检索结果的排序</div>
+            </div>
+            
+            <div class="flow-step">
+                <div class="flow-step-number">7</div>
+                <div><strong>问答生成</strong> - 通过questions_processing.py和API接口生成最终答案</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>数据流图</h2>
+            <div class="mermaid" id="flow-graph">
+                flowchart LR
+                    subgraph "输入层"
+                        PDF["PDF文档<br/>(原始文件)"]
+                        Q["用户问题<br/>(查询请求)"]
+                    end
+                    
+                    subgraph "预处理层"
+                        PARSE["pdf_parsing.py<br/>(文档解析)"]
+                        MERGE["parsed_reports_merging.py<br/>(内容规整)"]
+                        SPLIT["text_splitter.py<br/>(文本分块)"]
+                    end
+                    
+                    subgraph "索引层"
+                        INGEST["ingestion.py<br/>(数据索引)"]
+                        VDB["向量数据库<br/>(FAISS)"]
+                        BM25["BM25索引<br/>(传统检索)"]
+                    end
+                    
+                    subgraph "检索层"
+                        RETRIEVE["retrieval.py<br/>(混合检索)"]
+                        RERANK["reranking.py<br/>(LLM重排)"]
+                    end
+                    
+                    subgraph "回答层"
+                        PROCESS["questions_processing.py<br/>(问题处理)"]
+                        API["api_requests.py<br/>(模型调用)"]
+                        ANSWER["最终答案<br/>(结构化输出)"]
+                    end
+                    
+                    PDF --> PARSE
+                    PARSE --> MERGE
+                    MERGE --> SPLIT
+                    SPLIT --> INGEST
+                    INGEST --> VDB
+                    INGEST --> BM25
+                    Q --> PROCESS
+                    VDB --> RETRIEVE
+                    BM25 --> RETRIEVE
+                    RETRIEVE --> RERANK
+                    RERANK --> PROCESS
+                    PROCESS --> API
+                    API --> ANSWER
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>系统特点</h2>
+            <ul>
+                <li><strong>多模态支持</strong> - 支持文本、表格、图片等多类型内容的处理</li>
+                <li><strong>混合检索</strong> - 结合BM25和向量检索，提升检索准确性</li>
+                <li><strong>LLM重排</strong> - 使用大模型对检索结果进行相关性重排</li>
+                <li><strong>并行处理</strong> - 支持多线程和异步处理，提高处理效率</li>
+                <li><strong>结构化输出</strong> - 使用Pydantic定义数据结构，确保输出格式一致</li>
+                <li><strong>多提供商支持</strong> - 兼容OpenAI、IBM、Gemini、DashScope等多种LLM提供商</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // 延迟初始化Mermaid以确保脚本完全加载
+        setTimeout(function() {
+            if (typeof mermaid !== 'undefined') {
+                mermaid.initialize({
+                    startOnLoad: false,  // 关闭自动加载
+                    theme: 'default',
+                    flowchart: {
+                        useMaxWidth: false,
+                        htmlLabels: true,
+                        curve: 'basis'
+                    },
+                    fontFamily: 'sans-serif',
+                    fontSize: 12,
+                    securityLevel: 'loose'
+                });
+                
+                // 等待DOM完全渲染后再初始化图表
+                setTimeout(function() {
+                    const mermaidElements = document.querySelectorAll('.mermaid:not(.mermaid-loaded)');
+                    mermaidElements.forEach(function(element) {
+                        try {
+                            // 提取图表内容
+                            const chartContent = element.textContent || element.innerText;
+                            if (chartContent.trim()) {
+                                // 清空元素并添加加载状态
+                                element.classList.add('mermaid-loaded');
+                                
+                                // 渲染图表
+                                mermaid.mermaidAPI.render(element.id || 'mermaid-chart-' + Date.now(), chartContent, function(svgCode) {
+                                    element.innerHTML = svgCode;
+                                    element.classList.add('mermaid-rendered');
+                                }, element);
+                            }
+                        } catch (e) {
+                            console.error('Mermaid render error:', e);
+                            element.innerHTML = '<p style="color: red;">图表渲染失败: ' + e.message + '</p>';
+                        }
+                    });
+                }, 500);
+            } else {
+                console.error('Mermaid library not loaded');
+            }
+        }, 1000);
+    </script>
+</body>
+</html>
